@@ -1,7 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags, PermissionsBitField, SlashCommandBuilder } from 'discord.js';
 import path from 'path';
 import { fileURLToPath } from "url";
-import { log } from '../../utility/log.js';
 import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -65,7 +64,6 @@ export default {
             if (confirmation.customId === "confirm") {
                 await interaction.guild.members.kick(user, interaction.options.getString("raison"));
                 await confirmation.update({ content: 'Utilisateur expulsé.', embeds: [], components: [] });
-                await log(interaction, "kick", { kicked_username: user.username, reason: interaction.options.getString("raison") });
             } else if (confirmation.customId === "cancel") {
                 await confirmation.update({ content: 'Action annulée.', embeds: [], components: [] });
             }

@@ -2,7 +2,6 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlag
 import path from 'path';
 import { fileURLToPath } from "url";
 import 'dotenv/config';
-import { log } from '../../utility/log.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,7 +57,6 @@ export default {
             if (confirmation.customId === "confirm") {
                 await interaction.guild.members.ban(user);
                 await confirmation.update({ content: 'Utilisateur banni.' });
-                await log(interaction, "ban", { banned_username: user.username, reason: interaction.options.getString("raison") });
             } else if (confirmation.customId === "cancel") {
                 await confirmation.update({ content: 'Action annulée.', components: [] });
             }
