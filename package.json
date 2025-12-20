@@ -1,5 +1,5 @@
 {
-    "name": "nodeai",
+    "name": "nuit-bot",
     "version": "1.0.0",
     "type": "module",
     "scripts": {
@@ -7,7 +7,7 @@
         "start": "node src/main.js"
     },
     "author": "TotoCodeFR",
-    "license": "UNLICENSED",
+    "license": "AGPL-3.0-only",
     "description": "",
     "dependencies": {
         "@dopplerhq/node-sdk": "^1.3.0",
