@@ -5,8 +5,9 @@ Un bot multi-fonctions pour Discord.
 ## Comment avoir son propre bot sur l'infra de Nuit?
 
 En premier, il vous faudra plusieurs choses :
-[Git](https://git-scm.com) : Permettra de cloner ce repo (https://github.com/Nuit-Bot/service)
-[NodeJS](https://nodejs.org/fr/download) : Permettra d'exécuter le bot
+
+-   [Git](https://git-scm.com) : Permettra de cloner ce repo (https://github.com/Nuit-Bot/service)
+-   [NodeJS](https://nodejs.org/fr/download) : Permettra d'exécuter le bot
 
 ### 1. Cloner le repo
 
