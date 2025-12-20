@@ -5,6 +5,9 @@ let doppler = null;
 let loaded = false;
 
 export async function getDopplerClient() {
+    if (!process.env.DOPPLER_PROD_KEY) {
+        return;
+    }
     if (!doppler) {
         doppler = new DopplerSDK({
             accessToken: process.env.DOPPLER_PROD_KEY,

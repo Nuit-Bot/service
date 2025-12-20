@@ -31,11 +31,28 @@ Ouvrez [Discord Developers](https://discord.com/developers/applications) et cré
 
 Ensuite, créez un fichier `.env` dans le dossier `service` et remplissez-le avec :
 
-```DISCORD_TOKEN=<votre token ici>
+```
+DISCORD_TOKEN=<votre token ici>
 DISCORD_CLIENT_ID=<votre client ID ici>
 ```
 
 Ces deux valeurs se trouvent dans la page de développeurs de votre bot Discord.
+
+### 3. Préparer la base de données
+
+Tout dans Nuit tiens sur une base de données [Supabase](https://supabase.com), donc il faudra vous en procurer une pour utiliser le bot.
+
+En premier, il faudra rajouter ceci au `.env` :
+
+```
+SUPABASE_URL=<votre URL ici>
+SUPABASE_ANON_KEY=<votre clé ici>
+```
+
+Remplacez l'URL par celle qui vous est proposée pas Supabase (se termine par `.supabase.co` (et pas .com !))
+Et votre clé devrait se trouver juste en dessous.
+
+Sachant que il y a plusieurs tables à créer avec des colonnes spécifiques, nous ferons un programme qui automatisera ceci plus tard.
 
 ### 3. Préparer l'environnement
 
