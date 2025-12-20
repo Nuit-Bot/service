@@ -29,6 +29,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('Coming soon...');
+});
+
 app.listen(process.env.PORT || 3000, () => {
     console.log("Port " + process.env.PORT || 3000);
 });
