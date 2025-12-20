@@ -1,0 +1,13 @@
+name: Render Deploy
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make POST request to Render Deploy Hook
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
