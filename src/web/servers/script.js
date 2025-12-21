@@ -21,7 +21,7 @@ fetch('/api/servers/icon?server_id=' + serverId)
         }
     })
     .catch(error => {
-        console.error('Error fetching server icon:', error);
+        console.error('Erreur lors de la récupération de l\'icône du serveur :', error);
     });
 
 fetch('/api/servers/name?server_id=' + serverId)
@@ -30,7 +30,7 @@ fetch('/api/servers/name?server_id=' + serverId)
         serverName.textContent = data.name;
     })
     .catch(error => {
-        console.error('Error fetching server name:', error);
+        console.error('Erreur lors de la récupération du nom du serveur :', error);
     });
 
 function loadContent() {
@@ -54,7 +54,7 @@ function loadContent() {
                 });
             })
             .catch(error => {
-                console.error('Error fetching content:', error);
+                console.error('Erreur lors du chargement du contenu :', error);
             });
 
     }

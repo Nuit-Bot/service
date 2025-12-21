@@ -8,7 +8,7 @@ export default {
         const command = interaction.client.commands.get(interaction.commandName);
 
         if (!command) {
-            console.error(`No command matching ${interaction.commandName} was found.`);
+            console.error(`Aucune commande trouvée avec le nom : ${interaction.commandName}.`);
             return;
         }
 
@@ -18,12 +18,12 @@ export default {
             console.error(error);
             if (interaction.replied || interaction.deferred) {
                 await interaction.followUp({
-                    content: 'There was an error while executing this command!',
+                    content: '# Oups !\n\nUne erreur est survenue lors de l\'exécution de cette commande !',
                     flags: MessageFlags.Ephemeral,
                 });
             } else {
                 await interaction.reply({
-                    content: 'There was an error while executing this command!',
+                    content: '# Oups !\n\nUne erreur est survenue lors de l\'exécution de cette commande !',
                     flags: MessageFlags.Ephemeral,
                 });
             }

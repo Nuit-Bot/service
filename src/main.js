@@ -4,8 +4,8 @@ import { fileURLToPath } from "node:url";
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import passport from "passport"; // Import passport
-import { Strategy as DiscordStrategy } from "passport-discord-auth"; // Correct import for DiscordStrategy
+import passport from "passport";
+import { Strategy as DiscordStrategy } from "passport-discord-auth";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { deployCommands, deployEvents } from "./deploy.js";
@@ -64,13 +64,13 @@ const PgStore = connectPgSimple(session);
 
 app.use(session({
     store: new PgStore({
-        conString: process.env.DATABASE_URL, // Ensure this env var is set with your Supabase Postgres connection string
+        conString: process.env.DATABASE_URL, // ceci doit être un Postgres connection string
         createTableIfMissing: true,
     }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 jours
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -162,7 +162,7 @@ app.get('/api/servers/fetch', checkAuth, async (req, res) => {
 
         res.json(responseGuilds);
     } catch (error) {
-        console.error("Error fetching servers:", error);
+        console.error("Erreur lors de la récupération des serveurs :", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -173,7 +173,7 @@ app.get('/servers/:serverId', checkAuth, checkServerAccess, async (req, res) => 
         const serverId = req.params.serverId;
         const server = client.guilds.cache.get(serverId);
         if (!server) {
-            return res.status(404).json({ error: 'Server not found' });
+            return res.status(404).json({ error: 'Server introuvable' });
         }
         res.sendFile(path.join(__dirname, 'web/servers/index.html'));
     } catch (error) {
@@ -187,7 +187,7 @@ app.get('/api/servers/icon', checkAuth, checkServerAccess, async (req, res) => {
         const server = client.guilds.cache.get(serverId);
         res.json({ icon: server.icon });
     } catch (error) {
-        console.error('Error fetching server icon for server ' + req.query.server_id);
+        console.error('Erreur lors de la récupération de l\'icône du serveur : ' + req.query.server_id);
     };
 });
 
@@ -197,7 +197,7 @@ app.get('/api/servers/name', checkAuth, checkServerAccess, async (req, res) => {
         const server = client.guilds.cache.get(serverId);
         res.json({ name: server.name });
     } catch (error) {
-        console.error('Error fetching server name for server ' + req.query.server_id);
+        console.error('Erreur lors de la récupération du nom du serveur : ' + req.query.server_id);
     };
 });
 
