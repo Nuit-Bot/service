@@ -7,6 +7,7 @@ import cors from "cors";
 import passport from "passport"; // Import passport
 import { Strategy as DiscordStrategy } from "passport-discord-auth"; // Correct import for DiscordStrategy
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import { deployCommands, deployEvents } from "./deploy.js";
 import { getDopplerClient } from "./utility/doppler.js";
 import { getSupabaseClient } from "./utility/supabase.js";
@@ -59,10 +60,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const PgStore = connectPgSimple(session);
+
 app.use(session({
+    store: new PgStore({
+        conString: process.env.DATABASE_URL, // Ensure this env var is set with your Supabase Postgres connection string
+        createTableIfMissing: true,
+    }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
 }));
 app.use(passport.initialize());
 app.use(passport.session());
