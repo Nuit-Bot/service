@@ -1,4 +1,6 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, PermissionsBitField } from "discord.js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -8,6 +10,9 @@ import session from "express-session";
 import { deployCommands, deployEvents } from "./deploy.js";
 import { getDopplerClient } from "./utility/doppler.js";
 import { getSupabaseClient } from "./utility/supabase.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const doppler = await getDopplerClient();
 const supabase = getSupabaseClient();
@@ -70,6 +75,36 @@ function checkAuth(req, res, next) {
     res.status(302).redirect('/auth/discord');
 }
 
+// vérifie si l'utilisateur peut accéder le panel du serveur
+async function checkServerAccess(req, res, next) {
+    if (req.isAuthenticated()) {
+        const userGuilds = req.user.guilds;
+        const ownedGuilds = userGuilds.filter(guild => guild.owner);
+        const hasManageServerPermission = userGuilds.some(guild => {
+            const permissions = new PermissionsBitField(BigInt(guild.permissions));
+            return permissions.has(PermissionsBitField.Flags.ManageGuild);
+        });
+        const botGuilds = client.guilds.cache;
+
+        const serverId = req.params.serverId;
+        const botInGuild = botGuilds.has(serverId);
+
+        if (botInGuild) {
+            return next();
+        }
+        if (hasManageServerPermission) {
+            return next();
+        }
+        if (ownedGuilds.some(guild => guild.id === serverId)) {
+            return next();
+        }
+
+        res.status(302).redirect(`/auth/discord?guild_id=${serverId}&redirect_uri=/servers/${serverId}`);
+    } else {
+        res.status(302).redirect('/auth/discord');
+    }
+}
+
 app.use('/', express.static('src/web'));
 
 // Discord auth
@@ -107,7 +142,6 @@ app.get('/api/servers/fetch', checkAuth, async (req, res) => {
 
         const responseGuilds = ownedGuilds.map(guild => {
             const botInGuild = botGuilds.has(guild.id);
-            console.log(guild);
 
             return {
                 ...guild,
@@ -120,6 +154,40 @@ app.get('/api/servers/fetch', checkAuth, async (req, res) => {
         console.error("Error fetching servers:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+});
+
+// panel config serveurs
+app.get('/servers/:serverId', checkAuth, checkServerAccess, async (req, res) => {
+    try {
+        const serverId = req.params.serverId;
+        const server = client.guilds.cache.get(serverId);
+        if (!server) {
+            return res.status(404).json({ error: 'Server not found' });
+        }
+        res.sendFile(path.join(__dirname, 'web/servers/index.html'));
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/servers/icon', checkAuth, checkServerAccess, async (req, res) => {
+    try {
+        const serverId = req.query.server_id;
+        const server = client.guilds.cache.get(serverId);
+        res.json({ icon: server.icon });
+    } catch (error) {
+        console.error('Error fetching server icon for server ' + req.query.server_id);
+    };
+});
+
+app.get('/api/servers/name', checkAuth, checkServerAccess, async (req, res) => {
+    try {
+        const serverId = req.query.server_id;
+        const server = client.guilds.cache.get(serverId);
+        res.json({ name: server.name });
+    } catch (error) {
+        console.error('Error fetching server name for server ' + req.query.server_id);
+    };
 });
 
 app.listen(process.env.PORT || 3000, () => {
