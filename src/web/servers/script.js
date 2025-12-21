@@ -27,6 +27,7 @@ fetch('/api/servers/icon?server_id=' + serverId)
 fetch('/api/servers/name?server_id=' + serverId)
     .then(response => response.json())
     .then(data => {
+        document.title = data.name + ' - Nuit';
         serverName.textContent = data.name;
     })
     .catch(error => {
