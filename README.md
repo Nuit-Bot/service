@@ -48,20 +48,26 @@ En premier, il faudra rajouter ceci au `.env` :
 ```
 SUPABASE_URL=<votre URL ici>
 SUPABASE_ANON_KEY=<votre clé ici>
+DATABASE_URL=<votre URL ici>
 ```
 
 Remplacez l'URL par celle qui vous est proposée pas Supabase (se termine par `.supabase.co` (et pas .com !))
 Et votre clé devrait se trouver juste en dessous.
 
+L'URL de votre base de données Supabase se trouve en haut de votre écran en cliquant `Connect` puis en copiant le texte à droite du popup.
+
+> [!NOTE]
+> Si vous ne savez pas faire, suivez [ce lien](https://supabase.com/docs/guides/database/connecting-to-postgres#direct-connection)
+
 Sachant que il y a plusieurs tables à créer avec des colonnes spécifiques, nous ferons un programme qui automatisera ceci plus tard.
 
-### 3. Préparer l'environnement
+### 4. Préparer l'environnement
 
 Dans votre fenêtre de terminal, tapez la commande :
 `npm install`
 Ceci va installer tout ce que Nuit a besoin pour fonctionner.
 
-### 4. Exécuter le bot
+### 5. Exécuter le bot
 
 Pour démarrer le bot, tapez la commande :
 `npm start`
