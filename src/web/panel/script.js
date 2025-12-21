@@ -35,7 +35,7 @@ function fetchGuilds() {
                     joinedServers.appendChild(server);
                 } else {
                     btn.addEventListener('click', () => {
-                        window.location.href = `/auth/discord?guild_id=${guild.id}&redirect_uri=/servers/${guild.id}`;
+                        window.location.href = `/auth/discord?guild_id=${guild.id}&redirect_uri=/servers/${guild.id}&scope=identify+guilds+applications.commands+bot`;
                     });
                     unjoinedServers.appendChild(server);
                 }

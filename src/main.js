@@ -33,7 +33,7 @@ deployEvents(client);
 
 client.login(process.env.DISCORD_TOKEN);
 
-const scopes = 'identify+guilds+applications.commands+bot'.split('+');
+const scopes = 'identify+guilds'.split('+');
 
 passport.serializeUser((user, done) => {
     done(null, user);
@@ -115,6 +115,9 @@ app.get('/auth/discord', (req, res, next) => {
     }
     if (req.query.redirect_uri) {
         options.redirect_uri = req.query.redirect_uri;
+    }
+    if (req.query.scope) {
+        options.scope = req.query.scope.split('+');
     }
     passport.authenticate('discord', options)(req, res, next);
 });
