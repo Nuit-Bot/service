@@ -1,0 +1,56 @@
+@font-face {
+    font-family: "Rubik";
+    src: url(../Rubik.ttf);
+}
+
+body,
+html {
+    background-color: #1d1d25;
+    color: whitesmoke;
+    font-family: "Rubik";
+}
+
+#joined_servers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+#unjoined_servers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+#joined_servers > button,
+#unjoined_servers > button {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: whitesmoke;
+    border: rgba(255, 255, 255, 0.1) solid 1px;
+    border-radius: 16px;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
+        border-color 0.2s ease-in-out;
+}
+
+#joined_servers > button:hover,
+#unjoined_servers > button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: whitesmoke;
+    border: rgba(255, 255, 255, 0.15) solid 1px;
+    border-radius: 16px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+#joined_servers > button > .server__icon,
+#unjoined_servers > button > .server__icon {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: whitesmoke;
+    border: rgba(255, 255, 255, 0.1) solid 1px;
+    border-radius: 16px;
+    padding: 8px;
+    cursor: pointer;
+}

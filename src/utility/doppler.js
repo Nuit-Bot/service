@@ -19,7 +19,9 @@ export async function getDopplerClient() {
 
         // Inject into process.env
         Object.entries(secrets.secrets).forEach(([key, value]) => {
-            process.env[key] = value.raw;
+            if (!process.env[key]) {
+                process.env[key] = value.raw;
+            }
         });
 
         if (process.env.DOPPLER_DEV_KEY) {
@@ -30,7 +32,9 @@ export async function getDopplerClient() {
 
             // Inject into process.env
             Object.entries(secrets.secrets).forEach(([key, value]) => {
-                process.env[key] = value.raw;
+                if (!process.env[key]) {
+                    process.env[key] = value.raw;
+                }
             });
         }
 
