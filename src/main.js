@@ -64,7 +64,7 @@ const PgStore = connectPgSimple(session);
 
 app.use(session({
     store: new PgStore({
-        conString: process.env.DATABASE_URL, // ceci doit être un Postgres connection string
+        conString: process.env.DATABASE_POOLER_URL,
         createTableIfMissing: true,
     }),
     secret: process.env.SESSION_SECRET,
