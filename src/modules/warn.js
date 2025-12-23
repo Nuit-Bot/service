@@ -52,7 +52,7 @@ async function remove(userId, serverId, id) {
         .eq('id', id)
         .single();
 
-    if (error) {
+    if (removeError) {
         console.error(removeError);
         return removeError.code;
     }
@@ -63,4 +63,34 @@ async function remove(userId, serverId, id) {
     return 0;
 }
 
-export default { add, remove };
+/*
+Lister les avertissements d'un utilisateur
+*/
+async function list(userId, serverId) {
+    // vérifier que les valeurs requises existent
+    if (!userId || !serverId) {
+        return;
+    }
+
+    // lister ceci de la table supabase
+    const { data: warns, error: listError } = await supabase
+        .from('warns')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('server_id', serverId)
+        .order('id', { ascending: false });
+
+    if (listError) {
+        console.error(listError);
+        return listError.code;
+    }
+
+    // succès
+    return warns;
+}
+
+export default {
+    add,
+    remove,
+    list
+};
