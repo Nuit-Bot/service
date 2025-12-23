@@ -87,17 +87,14 @@ export default {
             } else {
                 interaction.editReply({
                     content: `Avertissements de ${user.toString()}:\n${warnings.map(w => {
-                        // Fix: Check for 'message' (used in insert) or fallback to 'reason'
-                        // Fix: Check for 'created_at' (Supabase default) or fallback to 'timestamp'
-                        const dateVal = w.created_at || w.timestamp;
+                        const dateVal = w.created_at;
                         const dateObj = new Date(dateVal);
-                        
-                        // Use Discord Timestamp <t:unix:f> if valid, otherwise fallback text
-                        const dateStr = !isNaN(dateObj.getTime()) 
-                            ? `<t:${Math.floor(dateObj.getTime() / 1000)}:f>` 
+
+                        const dateStr = !isNaN(dateObj.getTime())
+                            ? `<t:${Math.floor(dateObj.getTime() / 1000)}:f>`
                             : 'Date inconnue';
 
-                        return `- ID: ${w.id}, Raison: ${w.message || w.reason || 'Aucune'}, Modérateur: <@${w.admin_id}>, Date: ${dateStr}`;
+                        return `- ID: ${w.id}, Raison: ${w.message || 'Aucune'}, Modérateur: <@${w.admin_id}>, Date: ${dateStr}`;
                     }).join('\n')}`,
                     flags: MessageFlags.Ephemeral
                 });
