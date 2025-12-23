@@ -7,6 +7,7 @@ import { REST, Routes } from 'discord.js';
 import { readdir } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
+import chalk from 'chalk';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,7 +34,7 @@ export async function deployCommands(client) {
                 client.commands.set(command.default.data.name, command.default);
             }
             else {
-                console.warn(`[AVERTISSEMENT] La commande ${filePath} manque la/les propriéte(s) 'data' ou/et 'execute'!`);
+                console.warn(chalk.yellow(`[AVERTISSEMENT] La commande ${filePath} manque la/les propriéte(s) 'data' ou/et 'execute'!`));
             }
         }
     }
@@ -41,7 +42,7 @@ export async function deployCommands(client) {
     const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
     try {
-        console.log(`Chargement de ${commands.length} commandes...`);
+        console.log(chalk.gray(`Chargement de ${commands.length} commandes...`));
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data = await rest.put(
@@ -49,7 +50,7 @@ export async function deployCommands(client) {
             { body: commands },
         );
 
-        console.log(`${data.length} commandes ont été chargées!`);
+        console.log(chalk.cyan(`${chalk.green(commands.length)} commandes ont été chargées.`));
         return data;
     } catch (error) {
         // And of course, make sure you catch and log any errors!
@@ -59,7 +60,7 @@ export async function deployCommands(client) {
 }
 
 export async function deployEvents(client) {
-    console.log('Chargement des évènements...');
+    console.log(chalk.gray('Chargement des évènements...'));
     const eventsPath = path.join(__dirname, 'events');
     const eventFiles = (await readdir(eventsPath)).filter(file => file.endsWith('.js'));
 
@@ -76,9 +77,9 @@ export async function deployEvents(client) {
                 client.on(event.name, (...args) => event.execute(...args));
             }
         } else {
-            console.warn(`[AVERTISSEMENT] L'évènement ${filePath} manque la/les propriéte(s) 'name' ou/et 'execute' !`);
+            console.warn(chalk.yellow(`[AVERTISSEMENT] L'évènement ${filePath} manque la/les propriéte(s) 'name' ou/et 'execute' !`));
         }
     }
 
-    console.log(`Chargement des évènements terminé! ${eventFiles.length} évènements chargés.`);
+    console.log(chalk.cyan(`${chalk.green(eventFiles.length)} évènements ont été chargés.`));
 }

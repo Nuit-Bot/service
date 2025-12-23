@@ -11,6 +11,8 @@ import connectPgSimple from "connect-pg-simple";
 import { deployCommands, deployEvents } from "./deploy.js";
 import { getDopplerClient } from "./utility/doppler.js";
 import { getSupabaseClient } from "./utility/supabase.js";
+import chalk from 'chalk';
+chalk.level = 1;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -204,5 +206,5 @@ app.get('/api/servers/name', checkAuth, checkServerAccess, async (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-    console.log("Port " + (process.env.PORT || 3000));
+    console.log(chalk.green("Port " + (process.env.PORT || 3000) + " ouvert avec le panel."));
 });
