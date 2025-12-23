@@ -122,7 +122,7 @@ app.get('/auth/discord', (req, res, next) => {
         options.guild_id = req.query.guild_id;
     }
     if (req.query.redirect_uri) {
-        options.redirect_uri = req.query.redirect_uri;
+        req.session.redirectTo = req.query.redirect_uri;
     }
     if (req.query.scope) {
         options.scope = req.query.scope.split('+');
@@ -133,7 +133,9 @@ app.get('/auth/discord', (req, res, next) => {
 app.get('/auth/discord/callback', passport.authenticate('discord', {
     failureRedirect: '/'
 }), (req, res) => {
-    res.redirect('/panel/');
+    const redirect = req.session.redirectTo || '/panel/';
+    delete req.session.redirectTo;
+    res.redirect(redirect);
 });
 
 app.get('/logout', (req, res, next) => {
