@@ -4,15 +4,42 @@ import warn from "../../modules/warn.js";
 export default {
     data: new SlashCommandBuilder()
         .setName('warn')
-        .setDescription('Avertis un utilisateur.')
-        .addUserOption(option => option
-            .setName("utilisateur")
-            .setDescription("L'utilisateur à avertir")
-            .setRequired(true)
+        .setDescription('Avertis un utilisateur ou gérer les avertissements.')
+        .addSubcommand(subcommand => subcommand
+            .setName('add')
+            .setDescription('Avertis un utilisateur.')
+            .addUserOption(option => option
+                .setName("utilisateur")
+                .setDescription("L'utilisateur à avertir")
+                .setRequired(true)
+            )
+            .addStringOption(option => option
+                .setName("raison")
+                .setDescription("La raison pour laquelle l'utilisateur est averti.")
+            )
         )
-        .addStringOption(option => option
-            .setName("raison")
-            .setDescription("La raison pour avertir l'utilisateur.")
+        .addSubcommand(subcommand => subcommand
+            .setName('remove')
+            .setDescription('Supprime un avertissement d\'un utilisateur.')
+            .addUserOption(option => option
+                .setName("utilisateur")
+                .setDescription("L'utilisateur dont l'avertissement doit être supprimé")
+                .setRequired(true)
+            )
+            .addIntegerOption(option => option
+                .setName("avertissement")
+                .setDescription("L'identifiant de l'avertissement à supprimer")
+                .setRequired(true)
+            )
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName('list')
+            .setDescription('Liste les avertissements d\'un utilisateur.')
+            .addUserOption(option => option
+                .setName("utilisateur")
+                .setDescription("L'utilisateur dont les avertissements doivent être listés")
+                .setRequired(true)
+            )
         ),
 
     async execute(interaction) {
@@ -20,21 +47,36 @@ export default {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         // variables
+        const subcommand = interaction.options.getSubcommand();
         const user = interaction.options.getUser("utilisateur");
         const reason = interaction.options.getString("raison");
         const userId = user.id;
         const adminId = interaction.user.id;
         const serverId = interaction.guild.id;
+        const warnId = interaction.options.getInteger("avertissement");
 
-        // avertissement de l'utilisateur
-        const result = await warn.add(userId, adminId, serverId, reason);
+        if (subcommand === 'add') {
+            // avertissement de l'utilisateur
+            const result = await warn.add(userId, adminId, serverId, reason);
 
-        if (result === 0) { // succès
-            console.log(`Utilisateur ${userId} averti par ${adminId} pour la raison ${reason} dans le serveur ${serverId}`);
-            interaction.editReply({ content: 'Utilisateur averti.', flags: MessageFlags.Ephemeral });
-        } else { // errreur (result = code d'erreur)
-            console.error(result);
-            interaction.editReply({ content: 'Une erreur est survenue.', flags: MessageFlags.Ephemeral });
+            if (result === 0) { // succès
+                console.log(`Utilisateur ${userId} averti par ${adminId} pour la raison ${reason} dans le serveur ${serverId}`);
+                interaction.editReply({ content: 'Utilisateur averti.', flags: MessageFlags.Ephemeral });
+            } else { // errreur (result = code d'erreur)
+                console.error(result);
+                interaction.editReply({ content: 'Une erreur est survenue.', flags: MessageFlags.Ephemeral });
+            }
+        } else if (subcommand === 'remove') {
+            // suppression de l'avertissement de l'utilisateur
+            const result = await warn.remove(userId, serverId, warnId);
+
+            if (result === 0) { // succès
+                console.log(`Avertissement supprimé pour l'utilisateur ${userId} par ${adminId} dans le serveur ${serverId}`);
+                interaction.editReply({ content: 'Avertissement supprimé', flags: MessageFlags.Ephemeral });
+            } else { // errreur (result = code d'erreur)
+                console.error(result);
+                interaction.editReply({ content: 'Une erreur est survenue.', flags: MessageFlags.Ephemeral });
+            }
         }
     }
 };

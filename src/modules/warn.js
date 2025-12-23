@@ -34,4 +34,33 @@ async function add(userId, adminId, serverId, message) {
     return 0;
 }
 
-export default { add };
+/*
+Supprimer un avertissement à un utilisateur
+*/
+async function remove(userId, serverId, id) {
+    // vérifier que les valeurs requises existent toutes
+    if (!userId || !serverId || !id) {
+        return;
+    }
+
+    // supprimer ceci de la table supabase
+    const { error: removeError } = await supabase
+        .from('warns')
+        .delete()
+        .eq('user_id', userId)
+        .eq('server_id', serverId)
+        .eq('id', id)
+        .single();
+
+    if (error) {
+        console.error(removeError);
+        return removeError.code;
+    }
+
+    // TODO: lorsque les logs seront rajoutés, rajouter la suppression d'avertissements dedans
+
+    // succès
+    return 0;
+}
+
+export default { add, remove };
