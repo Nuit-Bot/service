@@ -14,6 +14,7 @@ Tout le code se trouve dans [src](./src/) :
 
 -   Les commandes dans [commands](./src/commands/)
 -   Les évènements dans [events](./src/events/)
--   Les utilitaires dans [utils](./src/utils/)
+-   Les utilitaires dans [utility](./src/utility/)
 -   Enregistrer les commandes et évènements dans [deploy.js](./src/deploy.js)
 -   La partie web dans [web](./src/web/)
+-   Les modules utilisés pour éviter de répéter la base de données dans [modules](./src/modules/)
