@@ -23,26 +23,29 @@ export default {
     async execute(interaction) {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
-            interaction.editReply({ content: '# Mais tu te crois pour qui?\n\nTu n\'a pas la permission pour utiliser cette commande!' });
+            return interaction.editReply({ content: '# Mais tu te crois pour qui?\n\nTu n\'a pas la permission pour utiliser cette commande!' });
         }
 
         const user = interaction.options.getUser("utilisateur");
+        const reason = interaction.options.getString("raison") || 'Aucune raison fournie';
 
+        // confirmation preparation
         const embed = new EmbedBuilder()
-            .setTitle("Expulser <@" + user.id + ">?")
-            .setDescription("<@" + interaction.member.id + "> veut expulser <@" + user.id + ">.");
+            .setTitle("Confirmation requise")
+            .setDescription(`Voulez-vous vraiment expulser <@${user.id}> ?\n\n**Raison :** ${reason}`)
+            .setColor(0xFFA500);
 
         const confirm = new ButtonBuilder()
-            .setLabel("Oui, je veux expulser cette personne.")
+            .setCustomId("confirm")
+            .setLabel("Confirmer")
             .setEmoji('✅')
-            .setStyle(ButtonStyle.Success)
-            .setCustomId("confirm");
+            .setStyle(ButtonStyle.Success);
 
         const cancel = new ButtonBuilder()
-            .setLabel("Non, je change d'idée.")
+            .setCustomId("cancel")
+            .setLabel("Annuler")
             .setEmoji('❌')
-            .setStyle(ButtonStyle.Danger)
-            .setCustomId("cancel");
+            .setStyle(ButtonStyle.Danger);
 
         const row = new ActionRowBuilder()
             .addComponents(confirm, cancel);
@@ -58,18 +61,17 @@ export default {
         try {
             const confirmation = await réponse.awaitMessageComponent({
                 filter: collectorFilter,
-                time: 120_000
+                time: 60_000
             });
 
             if (confirmation.customId === "confirm") {
-                await interaction.guild.members.kick(user, interaction.options.getString("raison"));
-                await confirmation.update({ content: 'Utilisateur expulsé.', embeds: [], components: [] });
+                await interaction.guild.members.kick(user, reason);
+                await confirmation.update({ content: `✅ **${user.tag}** a été expulsé.`, embeds: [], components: [] });
             } else if (confirmation.customId === "cancel") {
                 await confirmation.update({ content: 'Action annulée.', embeds: [], components: [] });
             }
         } catch (e) {
-            await interaction.editReply({ content: 'Aucune confirmation reçue!', embeds: [], components: [] });
-            console.log(e);
+            await interaction.editReply({ content: 'Temps écoulé, action annulée.', embeds: [], components: [] });
         }
     },
 };
