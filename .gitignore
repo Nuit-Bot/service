@@ -167,3 +167,5 @@ node_modules
 WARP.md
 
 *.csv
+
+supabase
