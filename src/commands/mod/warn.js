@@ -46,6 +46,11 @@ export default {
         // defer
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
+        if (interaction.member.permissions.has('ManageGuild') === false) {
+            interaction.editReply({ content: 'Vous n\'avez pas la permission d\'utiliser cette commande.', flags: MessageFlags.Ephemeral });
+            return;
+        }
+
         // variables
         const subcommand = interaction.options.getSubcommand();
         const user = interaction.options.getUser("utilisateur");
