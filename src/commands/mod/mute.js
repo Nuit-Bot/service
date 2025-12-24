@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags, PermissionsBitField, SlashCommandBuilder } from 'discord.js';
+import { sendLog } from '../../modules/logs.js';
 
 export default {
     data: new SlashCommandBuilder()
@@ -92,9 +93,11 @@ export default {
             if (confirmation.customId === 'confirm') {
                 if (subcommand === 'add') {
                     await member.timeout(ms, reason);
+                    await sendLog(interaction.guild, 'mute', targetUser, interaction.user, reason, durationInput);
                     await confirmation.update({ content: `✅ **${targetUser.tag}** a été rendu muet.`, embeds: [], components: [] });
                 } else {
                     await member.timeout(null, reason);
+                    await sendLog(interaction.guild, 'unmute', targetUser, interaction.user, reason);
                     await confirmation.update({ content: `🔊 La parole a été rendue à **${targetUser.tag}**.`, embeds: [], components: [] });
                 }
             } else {

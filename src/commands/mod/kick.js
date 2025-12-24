@@ -2,6 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlag
 import path from 'path';
 import { fileURLToPath } from "url";
 import 'dotenv/config';
+import { sendLog } from '../../modules/logs.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +67,7 @@ export default {
 
             if (confirmation.customId === "confirm") {
                 await interaction.guild.members.kick(user, reason);
+                await sendLog(interaction.guild, 'kick', user, interaction.user, reason);
                 await confirmation.update({ content: `✅ **${user.tag}** a été expulsé.`, embeds: [], components: [] });
             } else if (confirmation.customId === "cancel") {
                 await confirmation.update({ content: 'Action annulée.', embeds: [], components: [] });

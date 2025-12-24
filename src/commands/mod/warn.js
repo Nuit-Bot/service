@@ -1,5 +1,6 @@
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import warn from "../../modules/warn.js";
+import { sendLog } from '../../modules/logs.js';
 
 export default {
     data: new SlashCommandBuilder()
@@ -66,6 +67,7 @@ export default {
 
             if (result === 0) { // succès
                 console.log(`Utilisateur ${userId} averti par ${adminId} pour la raison ${reason} dans le serveur ${serverId}`);
+                await sendLog(interaction.guild, 'warn', user, interaction.user, reason);
                 interaction.editReply({ content: 'Utilisateur averti.', flags: MessageFlags.Ephemeral });
             } else { // errreur (result = code d\'erreur)
                 console.error(result);
@@ -77,6 +79,7 @@ export default {
 
             if (result === 0) { // succès
                 console.log(`Avertissement supprimé pour l\'utilisateur ${userId} par ${adminId} dans le serveur ${serverId}`);
+                // note: on ne loggue pas encore la suppression de warn via sendLog car sendLog ne gère pas 'unwarn' explicitement dans le switch, mais on pourrait l'ajouter
                 interaction.editReply({ content: 'Avertissement supprimé', flags: MessageFlags.Ephemeral });
             } else { // errreur (result = code d\'erreur)
                 console.error(result);

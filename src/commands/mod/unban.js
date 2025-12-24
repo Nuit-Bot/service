@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder, PermissionsBitField, MessageFlags } from 'discord.js';
+import { sendLog } from '../../modules/logs.js';
 
 export default {
     data: new SlashCommandBuilder()
@@ -67,6 +68,16 @@ export default {
                 try {
                     // on essaie de debannir
                     await interaction.guild.members.unban(userId, reason);
+                    
+                    // tentative de recuperation de l'user pour le log
+                    const user = await interaction.client.users.fetch(userId).catch(() => ({ 
+                        id: userId, 
+                        tag: 'Utilisateur Inconnu', 
+                        displayAvatarURL: () => null 
+                    }));
+
+                    await sendLog(interaction.guild, 'unban', user, interaction.user, reason);
+
                     await confirmation.update({ 
                         content: `✅ L'utilisateur **${userId}** a été débanni.`, 
                         embeds: [], 
