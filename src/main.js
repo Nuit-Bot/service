@@ -88,29 +88,40 @@ function checkAuth(req, res, next) {
 // vérifie si l'utilisateur peut accéder le panel du serveur
 async function checkServerAccess(req, res, next) {
     if (req.isAuthenticated()) {
+        const serverId = req.params.serverId || req.query.server_id;
+        if (!serverId) {
+            return res.status(400).json({ error: 'Server ID must be provided.' });
+        }
+        // Make it available for other middlewares
+        req.params.serverId = serverId;
+
         const userGuilds = req.user.guilds;
-        const ownedGuilds = userGuilds.filter(guild => guild.owner);
-        const hasManageServerPermission = userGuilds.some(guild => {
-            const permissions = new PermissionsBitField(BigInt(guild.permissions));
-            return permissions.has(PermissionsBitField.Flags.ManageGuild);
-        });
-        const botGuilds = client.guilds.cache;
+        const guildData = userGuilds.find(g => g.id === serverId);
 
-        const serverId = req.params.serverId;
-        const botInGuild = botGuilds.has(serverId);
-
-        if (botInGuild) {
-            return next();
-        }
-        if (hasManageServerPermission) {
-            return next();
-        }
-        if (ownedGuilds.some(guild => guild.id === serverId)) {
-            return next();
+        if (!guildData) {
+            // User is not in this server, so we can't verify permissions.
+            // Redirect to a safe page.
+            return res.status(403).redirect('/panel');
         }
 
-        res.status(302).redirect(`/auth/discord?guild_id=${serverId}&redirect_uri=/servers/${serverId}`);
+        const isOwner = guildData.owner;
+        const canManage = new PermissionsBitField(BigInt(guildData.permissions)).has(PermissionsBitField.Flags.ManageGuild);
+
+        if (!isOwner && !canManage) {
+            // User does not have sufficient permissions in this server.
+            return res.status(403).redirect('/panel');
+        }
+
+        const botInGuild = client.guilds.cache.has(serverId);
+        if (!botInGuild) {
+            // The bot is not in this guild. Let's send the user to invite it.
+            const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${serverId}&disable_guild_select=true&redirect_uri=${process.env.DISCORD_CALLBACK_URI}/panel`;
+            return res.redirect(inviteUrl);
+        }
+        
+        return next();
     } else {
+        // Not authenticated, redirect to login.
         res.status(302).redirect('/auth/discord');
     }
 }
@@ -204,6 +215,58 @@ app.get('/api/servers/name', checkAuth, checkServerAccess, async (req, res) => {
         console.error('Erreur lors de la récupération du nom du serveur : ' + req.query.server_id);
     };
 });
+
+app.get('/api/servers/:serverId/channels', checkAuth, checkServerAccess, async (req, res) => {
+    try {
+        const serverId = req.params.serverId;
+        const server = client.guilds.cache.get(serverId);
+        if (!server) {
+            return res.status(404).json({ error: 'Server not found' });
+        }
+        const channels = server.channels.cache
+            .filter(channel => channel.type === 0) // GUILD_TEXT
+            .map(channel => ({ id: channel.id, name: channel.name }));
+
+        res.json(channels);
+    } catch (error) {
+        console.error('Error fetching server channels:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/servers/:serverId/config', checkAuth, checkServerAccess, async (req, res) => {
+    try {
+        const serverId = req.params.serverId;
+        const { data, error } = await supabase
+            .from('guild_configs')
+            .select('log_channel_id')
+            .eq('guild_id', serverId)
+            .single();
+
+        if (error && error.code !== 'PGRST116') { // Ignore "no rows found" error
+            throw error;
+        }
+
+        res.json(data || {});
+    } catch (error) {
+        console.error(`Error fetching config for server ${req.params.serverId}:`, error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.post('/api/config/edit', checkAuth, checkServerAccess, async (req, res) => {
+    const serverId = req.query.server_id
+
+    const { error: updateError } = await supabase
+        .from('guild_configs')
+        .upsert({ guild_id: serverId, log_channel_id: req.query.log_channel_id }, { onConflict: 'guild_id' });
+
+    if (updateError) {
+        console.error('Error updating config:', updateError);
+        return res.status(500).json({ error: 'Failed to update configuration.' });
+    }
+    res.status(200).json({ success: true });
+} )
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(chalk.green("Port " + (process.env.PORT || 3000) + " ouvert avec le panel."));

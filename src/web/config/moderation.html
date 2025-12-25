@@ -9,6 +9,83 @@
 
 <body>
     <h1>Modération</h1>
+    <label for="logChannel">Log Channel</label>
+    <select name="logChannel" id="logChannel">
+        <option value="">Select a channel</option>
+    </select>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Path is like /servers/SERVER_ID/config/moderation.html
+            // So we need to get the serverId from the URL
+            const pathParts = window.location.pathname.split('/');
+            const serverId = pathParts[2]; // Assumes URL structure /servers/{serverId}/...
+
+            const logChannelSelect = document.getElementById('logChannel');
+
+            try {
+                // Fetch channels and config in parallel
+                const [channelsResponse, configResponse] = await Promise.all([
+                    fetch(`/api/servers/${serverId}/channels`),
+                    fetch(`/api/servers/${serverId}/config`)
+                ]);
+
+                if (!channelsResponse.ok) {
+                    console.error('Failed to fetch channels');
+                    return;
+                }
+                if (!configResponse.ok) {
+                    console.error('Failed to fetch config');
+                    return;
+                }
+
+                const channels = await channelsResponse.json();
+                const config = await configResponse.json();
+
+                // Populate the dropdown
+                channels.forEach(channel => {
+                    const option = document.createElement('option');
+                    option.value = channel.id;
+                    option.textContent = `#${channel.name}`;
+                    logChannelSelect.appendChild(option);
+                });
+
+                // Set the selected value based on current config
+                if (config.log_channel_id) {
+                    logChannelSelect.value = config.log_channel_id;
+                }
+
+            } catch (error) {
+                console.error('Error during data fetch:', error);
+            }
+
+            // Add event listener for saving changes
+            logChannelSelect.addEventListener('change', async (event) => {
+                const channelId = event.target.value;
+                if (!channelId) return;
+
+                try {
+                    const response = await fetch(`/api/config/edit?server_id=${serverId}&log_channel_id=${channelId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        console.log('Log channel updated successfully.');
+                        // Optionally provide user feedback (e.g., a small success message)
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Failed to update log channel:', errorData.error);
+                        // Optionally provide user feedback for error
+                    }
+                } catch (error) {
+                    console.error('Error updating log channel:', error);
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
