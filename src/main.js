@@ -257,6 +257,10 @@ app.get('/api/servers/:serverId/config', checkAuth, checkServerAccess, async (re
 app.post('/api/config/edit', checkAuth, checkServerAccess, async (req, res) => {
     const serverId = req.query.server_id
 
+    if (req.query.log_channel_id == 'none') {
+        req.query.log_channel_id = '0'
+    }
+
     const { error: updateError } = await supabase
         .from('guild_configs')
         .upsert({ guild_id: serverId, log_channel_id: req.query.log_channel_id }, { onConflict: 'guild_id' });

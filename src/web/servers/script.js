@@ -42,8 +42,10 @@ function loadContent() {
         fetch("/config/" + config + ".html")
             .then(response => response.text())
             .then(html => {
-                document.getElementById('content').innerHTML = html;
-                const scriptElements = document.getElementById('content').querySelectorAll('script');
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = html.replace(/__SERVER_ID__/g, serverId); // remplacer l'espace reserve par l'identifiant du serveur
+                
+                const scriptElements = contentDiv.querySelectorAll('script');
                 scriptElements.forEach(script => {
                     const newScript = document.createElement('script');
                     if (script.src) {
@@ -51,7 +53,8 @@ function loadContent() {
                     } else {
                         newScript.textContent = script.textContent;
                     }
-                    document.getElementById('content').appendChild(newScript);
+                    contentDiv.appendChild(newScript);
+                    script.remove(); // nettoyer le script inactif
                 });
             })
             .catch(error => {
