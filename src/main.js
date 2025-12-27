@@ -128,6 +128,8 @@ async function checkServerAccess(req, res, next) {
 
 app.use('/', express.static('src/web'));
 
+app.use('/docs', express.static('docs'))
+
 // Discord auth
 app.get('/auth/discord', (req, res, next) => {
     const options = {};

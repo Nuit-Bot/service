@@ -1,0 +1,2 @@
+* [Accueil](/)
+* [Contribuer](./CONTRIBUTING.md)
