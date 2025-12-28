@@ -47,12 +47,11 @@ En premier, il faudra rajouter ceci au `.env` :
 
 ```
 SUPABASE_URL=<votre URL ici>
-SUPABASE_ANON_KEY=<votre clé ici>
+SUPABASE_SERICE_ROLE_KEY=<votre clé ici>
 DATABASE_URL=<votre URL ici>
 ```
 
-Remplacez l'URL par celle qui vous est proposée pas Supabase (se termine par `.supabase.co` (et pas .com !))
-Et votre clé devrait se trouver juste en dessous.
+Remplacez l'URL par celle qui vous est proposée pas Supabase (se termine par `.supabase.co` (et pas .com !)) et votre clé 'service role' est la deuxième clé en dessous.
 
 L'URL de votre base de données Supabase se trouve en haut de votre écran en cliquant `Connect` puis en copiant le texte à droite du popup.
 
