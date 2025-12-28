@@ -1,7 +1,7 @@
 # Contribuer à Nuit
 
 > [!NOTE]
-> Cette partie pense que vous avez suivi [Comment avoir son propre bot sur l'infra de Nuit](./README.md#comment-avoir-son-propre-bot-sur-linfra-de-nuit).
+> Cette partie assume que vous avez suivi [Comment avoir son propre bot sur l'infra de Nuit](./README.md#comment-avoir-son-propre-bot-sur-linfra-de-nuit).
 > Si ce n'est pas le cas, veuillez le suivre avant de continuer.
 
 ## Requis
