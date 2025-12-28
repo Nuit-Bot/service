@@ -130,6 +130,10 @@ app.use('/', express.static('src/web'));
 
 app.use('/docs', express.static('docs'))
 
+// fichiers MD
+app.use('/README.md', express.static('README.md'))
+app.use('/CONTRIBUTING.md', express.static('CONTRIBUTING.md'))
+
 // Discord auth
 app.get('/auth/discord', (req, res, next) => {
     const options = {};
