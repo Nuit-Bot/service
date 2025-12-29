@@ -3,18 +3,21 @@
     src: url(../Rubik.ttf);
 }
 
+html,
 body {
-    background-color: #1d1d25; /* Matched from style.css */
-    font-family: "Rubik", 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #1d1d25; /* correspond à style.css */
+    font-family: "Rubik", "gg sans", "Helvetica Neue", Helvetica, Arial,
+        sans-serif;
     color: whitesmoke;
     margin: 0;
     padding: 0;
     display: flex;
     height: 100vh;
     overflow: hidden;
+    width: 100%;
 }
 
-/* Layout */
+/* mise en page */
 .container {
     display: flex;
     width: 100%;
@@ -23,6 +26,7 @@ body {
 
 .editor-pane {
     width: 50%;
+    height: 100%;
     padding: 20px;
     background-color: #1d1d25;
     overflow-y: auto;
@@ -34,15 +38,16 @@ body {
 
 .preview-pane {
     width: 50%;
+    height: 100%;
     padding: 20px;
-    background-color: #313338; /* Keep Discord dark theme for preview */
+    background-color: #313338; /* garde le thème sombre de discord pour l'aperçu */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* Common Elements */
+/* éléments communs */
 h2 {
     margin-top: 0;
     margin-bottom: 12px;
@@ -63,7 +68,8 @@ label {
     color: #b5bac1;
 }
 
-input[type="text"], textarea {
+input[type="text"],
+textarea {
     width: 100%;
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.05);
@@ -76,7 +82,8 @@ input[type="text"], textarea {
     transition: border-color 0.2s;
 }
 
-input[type="text"]:focus, textarea:focus {
+input[type="text"]:focus,
+textarea:focus {
     outline: none;
     border-color: #7171d3;
 }
@@ -85,7 +92,47 @@ textarea {
     min-height: 80px;
 }
 
-/* Message Content Section */
+/* section envoyer message */
+.message-send {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.message-send .form-group {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.message-send .form-group > div {
+    flex: 1;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: whitesmoke;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+select:focus {
+    border-color: #7171d3;
+}
+
+select option {
+    background-color: #1d1d25;
+    color: whitesmoke;
+}
+
+/* section contenu du message */
 .message-content-editor {
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -93,7 +140,7 @@ textarea {
     padding: 16px;
 }
 
-/* Embed Editor Card */
+/* carte éditeur d'embed */
 .embed-editor {
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -114,7 +161,7 @@ textarea {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Buttons */
+/* boutons */
 .btn {
     padding: 8px 16px;
     border-radius: 8px;
@@ -124,6 +171,11 @@ textarea {
     border: 1px solid transparent;
     transition: all 0.2s ease-in-out;
     color: whitesmoke;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .btn-primary {
@@ -157,7 +209,7 @@ textarea {
     padding-bottom: 20px;
 }
 
-/* Collapsible Sections inside Embed */
+/* sections repliables dans l'embed */
 .section {
     background-color: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -177,7 +229,7 @@ textarea {
 }
 
 .section-header::after {
-    content: '▼';
+    content: "▼";
     font-size: 10px;
     transition: transform 0.2s ease-in-out;
     opacity: 0.7;
@@ -200,7 +252,7 @@ textarea {
     display: none;
 }
 
-/* Preview Styles */
+/* styles de l'aperçu */
 .message-group {
     display: flex;
     gap: 16px;
@@ -215,7 +267,11 @@ textarea {
     overflow: hidden;
 }
 
-.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .message-content {
     flex: 1;
@@ -231,28 +287,37 @@ textarea {
     margin-bottom: 4px;
 }
 
-.username { font-size: 16px; font-weight: 500; color: whitesmoke; }
-.timestamp { font-size: 12px; color: #949ba4; }
+.username {
+    font-size: 16px;
+    font-weight: 500;
+    color: whitesmoke;
+}
+.timestamp {
+    font-size: 12px;
+    color: #949ba4;
+}
 
 .message-body {
     font-size: 16px;
     line-height: 1.375rem;
     color: #dbdee1;
     white-space: pre-wrap;
-    margin-bottom: 4px; /* Reduced to sit closer to embeds */
+    margin-bottom: 4px; /* réduit pour être plus proche des embeds */
 }
 
-.message-body:empty { display: none; }
+.message-body:empty {
+    display: none;
+}
 
-/* Embed Container in Preview */
+/* conteneur d'embed dans l'aperçu */
 .embed-container {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Space between multiple embeds */
+    gap: 8px; /* espace entre plusieurs embeds */
     margin-top: 4px;
 }
 
-/* Individual Embed Styling */
+/* style individuel de l'embed */
 .discord-embed {
     max-width: 520px;
     background-color: #2b2d31;
@@ -277,55 +342,4 @@ textarea {
     gap: 8px;
 }
 
-/* Embed Elements */
-.embed-author {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
-}
-.embed-author img { width: 24px; height: 24px; border-radius: 50%; }
-.embed-author a, .embed-author span { color: whitesmoke; text-decoration: none; }
-
-.embed-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #00b0f4;
-    text-decoration: none;
-    margin: 0;
-    display: inline-block;
-}
-
-.embed-description {
-    font-size: 14px;
-    line-height: 1.375rem;
-    color: #dbdee1;
-    white-space: pre-wrap;
-}
-
-.embed-image {
-    margin-top: 8px;
-    border-radius: 4px;
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-.embed-thumbnail {
-    width: 80px;
-    height: 80px;
-    border-radius: 4px;
-    object-fit: cover;
-    margin-top: 8px;
-}
-
-.embed-footer {
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #949ba4;
-}
-.embed-footer img { width: 20px; height: 20px; border-radius: 50%; }
+/* éléments de l'embed */
