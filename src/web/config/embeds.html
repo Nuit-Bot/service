@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed Builder</title>
+    <link rel="stylesheet" href="embeds.css">
+</head>
+
+<body>
+
+<div class="container">
+    <!-- Editor Pane -->
+    <div class="editor-pane" id="editor-container">
+        
+        <!-- Message Content Block -->
+        <div class="message-content-editor">
+            <h2>Contenu du message</h2>
+            <div class="form-group">
+                <label>Contenu</label>
+                <textarea id="input-content" rows="4" placeholder="Corps du message..."></textarea>
+            </div>
+        </div>
+
+        <!-- Dynamic Embed Editors will be injected here -->
+        <div id="embeds-list" style="display: flex; flex-direction: column; gap: 20px;"></div>
+
+        <!-- Add Button -->
+        <div class="actions">
+            <button class="btn btn-primary" onclick="addEmbed()">+ Ajouter un Embed</button>
+        </div>
+
+    </div>
+
+    <!-- Preview Pane -->
+    <div class="preview-pane">
+        <div class="message-group">
+            <div class="avatar">
+                <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Bot Avatar">
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="username">Nuit</span>
+                    <span id="msg-timestamp" class="timestamp">Aujourd'hui à --:--</span>
+                </div>
+                <!-- Message Body -->
+                <div id="preview-content" class="message-body"></div>
+                
+                <!-- Embeds Container -->
+                <div id="preview-embeds-container" class="embed-container">
+                    <!-- Dynamic Preview Embeds -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="embeds.js"></script>
+
+</body>
+</html>
