@@ -88,7 +88,7 @@ function checkAuth(req, res, next) {
 // vérifie si l'utilisateur peut accéder le panel du serveur
 async function checkServerAccess(req, res, next) {
     if (req.isAuthenticated()) {
-        const serverId = req.params.serverId || req.query.server_id;
+        const serverId = req.params.serverId || req.query.server_id || req.body.serverId || req.body.server_id;
         if (!serverId) {
             return res.status(400).json({ error: 'Server ID must be provided.' });
         }
@@ -277,6 +277,53 @@ app.post('/api/config/edit', checkAuth, checkServerAccess, async (req, res) => {
     }
     res.status(200).json({ success: true });
 } )
+
+// envoi d'embeds
+app.post('/api/embeds/send', checkAuth, checkServerAccess, async (req, res) => {
+    try {
+        const { serverId, channelId, content, embeds } = req.body;
+
+        if (!serverId || !channelId) {
+            return res.status(400).json({ error: 'Server ID and Channel ID are required.' });
+        }
+
+        const guild = client.guilds.cache.get(serverId);
+        if (!guild) return res.status(404).json({ error: 'Guild not found.' });
+
+        const channel = guild.channels.cache.get(channelId);
+        if (!channel) return res.status(404).json({ error: 'Channel not found.' });
+
+        // transformer les embeds pour correspondre au format discord.js
+        const formattedEmbeds = embeds.map(e => ({
+            author: e.authorName ? {
+                name: e.authorName,
+                url: e.authorUrl || undefined,
+                icon_url: e.authorIcon || undefined
+            } : undefined,
+            title: e.title || undefined,
+            url: e.titleUrl || undefined,
+            description: e.description || undefined,
+            color: parseInt(e.color.replace('#', ''), 16),
+            image: e.image ? { url: e.image } : undefined,
+            thumbnail: e.thumbnail ? { url: e.thumbnail } : undefined,
+            footer: e.footerText ? {
+                text: e.footerText,
+                icon_url: e.footerIcon || undefined
+            } : undefined,
+            timestamp: e.timestamp ? new Date().toISOString() : undefined
+        })).filter(e => e.title || e.description || e.author || e.image || e.thumbnail || e.footer);
+
+        await channel.send({
+            content: content || undefined,
+            embeds: formattedEmbeds
+        });
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'embed :', error);
+        res.status(500).json({ error: 'Failed to send message.' });
+    }
+});
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(chalk.green("Port " + (process.env.PORT || 3000) + " ouvert avec le panel."));

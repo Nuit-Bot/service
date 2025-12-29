@@ -36,25 +36,39 @@ fetch('/api/servers/name?server_id=' + serverId)
 
 function loadContent() {
     const config = new URL(window.location.href).searchParams.get('config');
+    for (const element of sidebar.children) {
+        element.classList.remove('active');
+    }
     if (config) {
-        document.getElementById(config).classList.add('active');
+        document.getElementById(config)?.classList.add('active');
 
         fetch("/config/" + config + ".html")
             .then(response => response.text())
             .then(html => {
                 const contentDiv = document.getElementById('content');
                 contentDiv.innerHTML = html.replace(/__SERVER_ID__/g, serverId); // remplacer l'espace reserve par l'identifiant du serveur
-                
+
                 const scriptElements = contentDiv.querySelectorAll('script');
                 scriptElements.forEach(script => {
                     const newScript = document.createElement('script');
                     if (script.src) {
-                        newScript.src = script.src;
+                        newScript.src = '/config/' + script.src.split('/').pop();
                     } else {
                         newScript.textContent = script.textContent;
                     }
                     contentDiv.appendChild(newScript);
                     script.remove(); // nettoyer le script inactif
+                });
+
+                const linkElements = contentDiv.querySelectorAll('link[rel="stylesheet"]');
+                linkElements.forEach(link => {
+                    const newLink = document.createElement('link');
+                    newLink.rel = 'stylesheet';
+                    newLink.href = '/config/' + link.href.split('/').pop();
+                    newLink.crossOrigin = 'anonymous';
+                    newLink.type = 'text/css';
+                    document.head.appendChild(newLink);
+                    link.remove();
                 });
             })
             .catch(error => {
@@ -70,6 +84,7 @@ for (const element of sidebar.children) {
             const url = new URL(window.location.href);
             url.searchParams.set('config', element.id);
             window.history.pushState({}, '', url.toString());
+            loadContent();
         });
     }
 }

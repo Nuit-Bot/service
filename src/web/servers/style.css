@@ -13,8 +13,8 @@ html {
 }
 
 main {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 200px 1fr;
     height: 100vh;
     width: 100vw;
     padding: 8px;
@@ -29,6 +29,13 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+#content {
+    min-height: 0; /* Allows the grid item to shrink below its minimum content size */
+    height: 100%;
+    overflow-y: auto; /* Enables scrolling for standard pages, while allowing embed builder to fit */
+    box-sizing: border-box;
 }
 
 #serverInfo {
