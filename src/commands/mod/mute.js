@@ -41,8 +41,11 @@ export default {
             return interaction.editReply({ content: 'Impossible de trouver ce membre sur le serveur.' });
         }
 
+        if (member.roles.highest.position >= interaction.guild.members.me.roles.highest.position) {
+            return interaction.editReply("# Mince, alors !\n\nL'utilisateur a un rôle supérieur ou égal au bot, il ne peut pas être rendu muet.");
+        }
         if (member.roles.highest.position >= interaction.member.roles.highest.position) {
-            return interaction.editReply({ content: 'Tu ne peux pas gérer ce membre car il est supérieur ou égal à toi.' });
+            return interaction.editReply("# Mince, alors !\n\nTu ne peux pas rendre muet ce membre car il est supérieur ou égal à toi.");
         }
 
         let ms = null;

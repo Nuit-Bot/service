@@ -23,12 +23,24 @@ export default {
 
     async execute(interaction) {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
             return interaction.editReply({ content: '# Mais tu te crois pour qui?\n\nTu n\'a pas la permission pour utiliser cette commande!' });
         }
 
         const user = interaction.options.getUser("utilisateur");
         const reason = interaction.options.getString("raison") || 'Aucune raison fournie';
+
+        const targetMember = await interaction.guild.members.fetch(user.id).catch(() => null);
+
+        if (targetMember) {
+            if (targetMember.roles.highest.position >= interaction.guild.members.me.roles.highest.position) {
+                return interaction.editReply("# Mince, alors !\n\nL'utilisateur a un rôle supérieur ou égal au bot, il ne peut pas être banni.");
+            }
+            if (targetMember.roles.highest.position >= interaction.member.roles.highest.position) {
+                return interaction.editReply("# Mince, alors !\n\nTu ne peux pas bannir ce membre car il est supérieur ou égal à toi.");
+            }
+        }
 
         // confirmation preparation
         const embed = new EmbedBuilder()
@@ -56,7 +68,7 @@ export default {
         const collectorFilter = i => i.user.id === interaction.user.id;
 
         try {
-            const confirmation = await réponse.resource.message.awaitMessageComponent({ filter: collectorFilter, time: 60_000 });
+            const confirmation = await réponse.awaitMessageComponent({ filter: collectorFilter, time: 60_000 });
 
             if (confirmation.customId === "confirm") {
                 await interaction.guild.members.ban(user, { reason: reason });
@@ -65,7 +77,8 @@ export default {
             } else if (confirmation.customId === "cancel") {
                 await confirmation.update({ content: 'Action annulée.', embeds: [], components: [] });
             }
-        } catch {
+        } catch (e) {
+            console.error(e);
             await interaction.editReply({ content: 'Temps écoulé, action annulée.', embeds: [], components: [] });
         }
     },
