@@ -30,6 +30,19 @@ export default {
         const user = interaction.options.getUser("utilisateur");
         const reason = interaction.options.getString("raison") || 'Aucune raison fournie';
 
+        const targetMember = await interaction.guild.members.fetch(user.id).catch(() => null);
+
+        if (!targetMember) {
+            return interaction.editReply({ content: 'Impossible de trouver ce membre sur le serveur.' });
+        }
+
+        if (targetMember.roles.highest.position >= interaction.guild.members.me.roles.highest.position) {
+            return interaction.editReply("# Mince, alors !\n\nL'utilisateur a un rôle supérieur ou égal au bot, il ne peut pas être expulsé.");
+        }
+        if (targetMember.roles.highest.position >= interaction.member.roles.highest.position) {
+            return interaction.editReply("# Mince, alors !\n\nTu ne peux pas expulser ce membre car il est supérieur ou égal à toi.");
+        }
+
         // confirmation preparation
         const embed = new EmbedBuilder()
             .setTitle("Confirmation requise")

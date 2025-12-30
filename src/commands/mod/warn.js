@@ -61,6 +61,17 @@ export default {
         const serverId = interaction.guild.id;
         const warnId = interaction.options.getInteger("avertissement");
 
+        const targetMember = await interaction.guild.members.fetch(user.id).catch(() => null);
+
+        if (targetMember) {
+            if (targetMember.roles.highest.position >= interaction.guild.members.me.roles.highest.position) {
+                return interaction.editReply("# Mince, alors !\n\nL'utilisateur a un rôle supérieur ou égal au bot, il ne peut pas être averti.");
+            }
+            if (targetMember.roles.highest.position >= interaction.member.roles.highest.position) {
+                return interaction.editReply("# Mince, alors !\n\nTu ne peux pas avertir ce membre car il est supérieur ou égal à toi.");
+            }
+        }
+
         if (subcommand === 'add') {
             // avertissement de l\'utilisateur
             const result = await warn.add(userId, adminId, serverId, reason);
