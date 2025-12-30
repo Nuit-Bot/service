@@ -38,6 +38,8 @@ function fetchGuilds() {
                         window.location.href = `/auth/discord?guild_id=${guild.id}&redirect_uri=/servers/${guild.id}&scope=identify+guilds+applications.commands+bot`;
                     });
                     unjoinedServers.appendChild(server);
+                    icon.setAttribute("width", "48");
+                    icon.setAttribute("height", "48");
                 }
             });
             document.getElementById("loading_text").style.display = "none";
