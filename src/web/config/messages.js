@@ -1,4 +1,4 @@
-(function() {
+(function () {
     // état
     const state = {
         content: '',
@@ -16,7 +16,7 @@
 
     const updateSendBtn = () => {
         if (!sendBtn || !channelSelect) return;
-        const hasContent = state.content.trim() !== '' || state.embeds.some(e => 
+        const hasContent = state.content.trim() !== '' || state.embeds.some(e =>
             e.title || e.description || e.authorName || e.image || e.thumbnail || e.footerText
         );
         sendBtn.disabled = channelSelect.value === 'none' || !hasContent;
@@ -51,7 +51,7 @@
             sendBtn.textContent = 'Envoi...';
 
             try {
-                const response = await fetch('/api/embeds/send', {
+                const response = await fetch('/api/messages/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -92,7 +92,7 @@
     }
 
     // rendre la fonction addEmbed disponible globalement pour le bouton onclick
-    window.addEmbed = function() {
+    window.addEmbed = function () {
         const embedId = Date.now();
         const embedData = {
             id: embedId,
@@ -107,7 +107,7 @@
     };
 
     // rendre la fonction deleteEmbed disponible globalement
-    window.deleteEmbed = function(index) {
+    window.deleteEmbed = function (index) {
         state.embeds.splice(index, 1);
         // re-rendre tous les éditeurs pour mettre à jour les indices
         embedsList.innerHTML = '';
@@ -116,7 +116,7 @@
     };
 
     // rendre la fonction toggleSection disponible globalement
-    window.toggleSection = function(header) {
+    window.toggleSection = function (header) {
         const content = header.nextElementSibling;
         content.classList.toggle('hidden');
         header.classList.toggle('active');
@@ -244,7 +244,7 @@
             let authorHtml = '';
             if (embed.authorName) {
                 const icon = embed.authorIcon ? `<img src="${embed.authorIcon}" style="display:block;">` : '';
-                const name = embed.authorUrl 
+                const name = embed.authorUrl
                     ? `<a href="${embed.authorUrl}" target="_blank">${embed.authorName}</a>`
                     : `<span>${embed.authorName}</span>`;
                 authorHtml = `<div class="embed-author">${icon}${name}</div>`;
@@ -261,7 +261,7 @@
             }
 
             let descHtml = embed.description ? `<div class="embed-description">${parseMarkdown(embed.description)}</div>` : '';
-            
+
             let imageHtml = embed.image ? `<img class="embed-image" src="${embed.image}">` : '';
             let thumbHtml = embed.thumbnail ? `<img class="embed-thumbnail" src="${embed.thumbnail}">` : '';
 
@@ -289,7 +289,7 @@
                     ${thumbHtml}
                 </div>
             `;
-            
+
             previewEmbedsContainer.appendChild(el);
         });
 
@@ -322,7 +322,7 @@
             .replace(/~~(.*?)~~/g, '<s>$1</s>')
             .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
             .replace(/`(.*?)`/g, '<code>$1</code>');
-            
+
         html = html.replace(/<\/h[1-3]><br>/g, (match) => match.replace('<br>', ''));
         html = html.replace(/<\/ul><br>/g, '</ul>');
         html = html.replace(/<\/blockquote><br>/g, '</blockquote>');
@@ -334,8 +334,8 @@
         const now = new Date();
         const timeString = "Aujourd'hui à " + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         const timeEl = document.getElementById('msg-timestamp');
-        if(timeEl) timeEl.textContent = timeString;
-        
+        if (timeEl) timeEl.textContent = timeString;
+
         // re-rendre pour mettre à jour les horodatages du pied de page si actif
         if (state.embeds.some(e => e.timestamp)) {
             renderPreview();
@@ -344,7 +344,7 @@
 
     // init
     window.addEmbed(); // commencer avec un embed
-    
+
     // Nettoyage de l'intervalle si le script est rechargé (optionnel mais bon pour la mémoire)
     if (window.embedTimer) clearInterval(window.embedTimer);
     window.embedTimer = setInterval(updateTime, 1000);
