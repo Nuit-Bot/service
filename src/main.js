@@ -115,10 +115,10 @@ async function checkServerAccess(req, res, next) {
         const botInGuild = client.guilds.cache.has(serverId);
         if (!botInGuild) {
             // The bot is not in this guild. Let's send the user to invite it.
-            const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${serverId}&disable_guild_select=true&redirect_uri=${process.env.DISCORD_CALLBACK_URI}/panel`;
+            const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${serverId}&disable_guild_select=true&redirect_uri=${process.env.DISCORD_CALLBACK_URI}`;
             return res.redirect(inviteUrl);
         }
-        
+
         return next();
     } else {
         // Not authenticated, redirect to login.
@@ -128,11 +128,11 @@ async function checkServerAccess(req, res, next) {
 
 app.use('/', express.static('src/web'));
 
-app.use('/docs', express.static('docs'))
+app.use('/docs', express.static('docs'));
 
 // fichiers MD
-app.use('/README.md', express.static('README.md'))
-app.use('/CONTRIBUTING.md', express.static('CONTRIBUTING.md'))
+app.use('/README.md', express.static('README.md'));
+app.use('/CONTRIBUTING.md', express.static('CONTRIBUTING.md'));
 
 // Discord auth
 app.get('/auth/discord', (req, res, next) => {
@@ -261,10 +261,10 @@ app.get('/api/servers/:serverId/config', checkAuth, checkServerAccess, async (re
 });
 
 app.post('/api/config/edit', checkAuth, checkServerAccess, async (req, res) => {
-    const serverId = req.query.server_id
+    const serverId = req.query.server_id;
 
     if (req.query.log_channel_id == 'none') {
-        req.query.log_channel_id = '0'
+        req.query.log_channel_id = '0';
     }
 
     const { error: updateError } = await supabase
@@ -276,7 +276,7 @@ app.post('/api/config/edit', checkAuth, checkServerAccess, async (req, res) => {
         return res.status(500).json({ error: 'Failed to update configuration.' });
     }
     res.status(200).json({ success: true });
-} )
+});
 
 // envoi d'embeds
 app.post('/api/embeds/send', checkAuth, checkServerAccess, async (req, res) => {
