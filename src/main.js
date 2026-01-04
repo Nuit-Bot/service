@@ -46,6 +46,10 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
+
+console.log(chalk.yellow(`DEBUG: DISCORD_CALLBACK_URI is "${process.env.DISCORD_CALLBACK_URI}"`));
+console.log(chalk.yellow(`DEBUG: DISCORD_CLIENT_ID is "${process.env.DISCORD_CLIENT_ID?.slice(0, 4)}..."`));
+
 passport.use(new DiscordStrategy({
     clientId: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
