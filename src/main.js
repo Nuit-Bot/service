@@ -31,6 +31,10 @@ const client = new Client({
 
 client.commands = new Map();
 
+client.rest.on('rateLimited', (rateLimitedData) => {
+    console.warn("Ratelimited ! : ", rateLimitedData);
+});
+
 deployCommands(client);
 deployEvents(client);
 
