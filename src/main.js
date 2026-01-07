@@ -313,6 +313,11 @@ app.post('/api/messages/send', checkAuth, checkServerAccess, async (req, res) =>
             timestamp: e.timestamp ? new Date().toISOString() : undefined
         })).filter(e => e.title || e.description || e.author || e.image || e.thumbnail || e.footer);
 
+        const message = await channel.send({
+            content: content || undefined,
+            embeds: formattedEmbeds
+        });
+
         // enregistrer le message dans la bdd
         const { error } = await supabase
             .from('messages')
@@ -320,17 +325,13 @@ app.post('/api/messages/send', checkAuth, checkServerAccess, async (req, res) =>
                 guild_id: serverId,
                 channel_id: channelId,
                 content: content || undefined,
-                embeds: JSON.stringify(formattedEmbeds)
+                embeds: JSON.stringify(formattedEmbeds),
+                id: message.id
             });
 
         if (error) {
             console.error('Erreur lors de l\'enregistrement du message : ', error);
         }
-
-        await channel.send({
-            content: content || undefined,
-            embeds: formattedEmbeds
-        });
 
         res.json({ success: true });
     } catch (error) {
