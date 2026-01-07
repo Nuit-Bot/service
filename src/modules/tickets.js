@@ -48,5 +48,5 @@ async function send(interaction, serverId, channelId, ticketSetupId) {
 }
 
 export default {
-    sendTicketMsg
+    send
 };
