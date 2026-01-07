@@ -5,6 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderation</title>
+
+    <style>
+        select {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: whitesmoke;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus {
+            border-color: #7171d3;
+        }
+
+        select option {
+            background-color: #1d1d25;
+            color: whitesmoke;
+        }
+    </style>
 </head>
 
 <body>
@@ -52,7 +76,7 @@
                 if (config.log_channel_id) {
                     logChannelSelect.value = config.log_channel_id;
                 } else {
-                    logChannelSelect.value = 'none'
+                    logChannelSelect.value = 'none';
                 }
 
             } catch (error) {
