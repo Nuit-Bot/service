@@ -47,6 +47,34 @@ async function send(interaction, serverId, channelId, ticketSetupId) {
     }
 }
 
+async function create(interaction, serverId, channelId, ticketSetupId) {
+    const channel = interaction.guild.channels.fetch(channelId);
+
+    if (!channel) {
+        console.error('Channel not found');
+        return;
+    }
+
+    const { data: ticketOpenMessage, error: ticketOpenMessageError } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('server_id', serverId)
+        .eq('channel_id', channelId)
+        .like('type', `ticket_open_${ticketSetupId}`)
+        .single();
+
+    if (ticketOpenMessageError) {
+        if (ticketOpenMessageError.code = 'PGRST116') { // ou peu importe quel code c'est lorsque rien n'est trouvé
+            console.error('Impossible de trouver le message de ticket ouvert');
+            return;
+        }
+        console.error('Error while looking for open ticket message : ', ticketOpenMessageError);
+        return;
+    }
+
+    const thread = channel.threads.create();
+}
+
 export default {
     send
 };
