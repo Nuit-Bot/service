@@ -1,3 +1,4 @@
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, ThreadAutoArchiveDuration } from "discord.js";
 import { getSupabaseClient } from "../utility/supabase.js";
 
 const supabase = getSupabaseClient();
@@ -6,7 +7,7 @@ async function send(interaction, serverId, channelId, ticketSetupId) {
     const { data: ticketCreateMessage, error: ticketCreateMessageError } = await supabase
         .from('messages')
         .select('*')
-        .eq('server_id', serverId)
+        .eq('guild_id', serverId)
         .eq('channel_id', channelId)
         .like('type', `ticket_create_${ticketSetupId}`)
         .single();
@@ -24,15 +25,38 @@ async function send(interaction, serverId, channelId, ticketSetupId) {
         return;
     }
 
-    const potentialMessage = await channel.messages.fetch(ticketCreateMessage.id);
-    if (!potentialMessage) {
+    const ticketCreateButton = new ButtonBuilder()
+        .setCustomId(`ticket_create_${ticketSetupId}`)
+        .setLabel('Créer un ticket')
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji('🎫');
+
+    const row = new ActionRowBuilder()
+        .addComponents(ticketCreateButton);
+
+    try {
+        const potentialMessage = await channel.messages.fetch(ticketCreateMessage.id);
+
+        const message = potentialMessage;
+
+        await message.edit({
+            content: ticketCreateMessage.content,
+            embeds: typeof ticketCreateMessage.embeds === 'string' ? JSON.parse(ticketCreateMessage.embeds) : ticketCreateMessage.embeds,
+            components: [row]
+        });
+
+    } catch (error) {
         // message introuvable, envoyons le
-        const message = await channel.send(ticketCreateMessage.content, { embeds: ticketCreateMessage.embeds }); // TODO: ajouter boutons pour créer le ticket
+        const message = await channel.send({
+            content: ticketCreateMessage.content,
+            embeds: typeof ticketCreateMessage.embeds === 'string' ? JSON.parse(ticketCreateMessage.embeds) : ticketCreateMessage.embeds,
+            components: [row]
+        });
 
         const { error: messageIdUpdateError } = await supabase
             .from('messages')
-            .update({ id: ticketCreateMessage.id, content: message.content, embeds: JSON.stringify(message.embeds) })
-            .eq('server_id', serverId)
+            .update({ id: message.id, content: message.content, embeds: JSON.stringify(message.embeds) })
+            .eq('guild_id', serverId)
             .eq('channel_id', channelId)
             .like('type', `ticket_create_${ticketSetupId}`);
 
@@ -40,10 +64,7 @@ async function send(interaction, serverId, channelId, ticketSetupId) {
             console.error('Error updating message ID:', messageIdUpdateError);
         }
 
-    } else {
-        const message = potentialMessage;
-
-        message.edit(data.content, { embeds: data.embeds }); // TODO: ajouter boutons pour créer le ticket
+        interaction.editReply({ content: `Message envoyé dans <#${message.channelId}>` });
     }
 }
 
@@ -58,13 +79,13 @@ async function create(interaction, serverId, channelId, ticketSetupId) {
     const { data: ticketOpenMessage, error: ticketOpenMessageError } = await supabase
         .from('messages')
         .select('*')
-        .eq('server_id', serverId)
+        .eq('guild_id', serverId)
         .eq('channel_id', channelId)
         .like('type', `ticket_open_${ticketSetupId}`)
         .single();
 
     if (ticketOpenMessageError) {
-        if (ticketOpenMessageError.code = 'PGRST116') { // ou peu importe quel code c'est lorsque rien n'est trouvé
+        if (ticketOpenMessageError.code = 'PGRST116') {
             console.error('Impossible de trouver le message de ticket ouvert');
             return;
         }
@@ -72,9 +93,21 @@ async function create(interaction, serverId, channelId, ticketSetupId) {
         return;
     }
 
-    const thread = channel.threads.create();
+    const thread = await channel.threads.create({
+        name: `ticket-${interaction.user.username}`,
+        autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
+        reason: `Ticket ouvert par ${interaction.user.username}`,
+        message: {
+            content: ticketOpenMessage.content,
+            embeds: JSON.parse(ticketOpenMessage.embeds)
+        },
+        type: ChannelType.PrivateThread
+    });
+
+    interaction.editReply({ content: `Votre ticket a été ouvert dans le fil <#${thread.id}>` });
 }
 
 export default {
-    send
+    send,
+    create
 };
