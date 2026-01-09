@@ -116,6 +116,8 @@ async function create(interaction, serverId, channelId, ticketSetupId) {
         type: ChannelType.PrivateThread
     });
 
+    thread.members.add(interaction.user);
+
     interaction.editReply({ content: `Votre ticket a été ouvert dans le fil <#${thread.id}>` });
 }
 
