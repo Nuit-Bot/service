@@ -282,8 +282,8 @@ app.post('/api/config/edit', checkAuth, checkServerAccess, async (req, res) => {
     res.status(200).json({ success: true });
 });
 
-// envoi d'embeds
-app.post('/api/embeds/send', checkAuth, checkServerAccess, async (req, res) => {
+// envoi de messages
+app.post('/api/messages/send', checkAuth, checkServerAccess, async (req, res) => {
     try {
         const { serverId, channelId, content, embeds } = req.body;
 
@@ -317,15 +317,56 @@ app.post('/api/embeds/send', checkAuth, checkServerAccess, async (req, res) => {
             timestamp: e.timestamp ? new Date().toISOString() : undefined
         })).filter(e => e.title || e.description || e.author || e.image || e.thumbnail || e.footer);
 
-        await channel.send({
+        const message = await channel.send({
             content: content || undefined,
             embeds: formattedEmbeds
         });
 
+        // enregistrer le message dans la bdd
+        const { error } = await supabase
+            .from('messages')
+            .insert({
+                guild_id: serverId,
+                channel_id: channelId,
+                content: content || undefined,
+                embeds: JSON.stringify(formattedEmbeds),
+                id: message.id
+            });
+
+        if (error) {
+            console.error('Erreur lors de l\'enregistrement du message : ', error);
+        }
+
         res.json({ success: true });
     } catch (error) {
-        console.error('Erreur lors de l\'envoi de l\'embed :', error);
+        console.error('Erreur lors de l\'envoi du message :', error);
         res.status(500).json({ error: 'Failed to send message.' });
+    }
+});
+
+// récupérer les messages
+app.get('/api/messages/get', async (req, res) => {
+    const { serverId } = req.query;
+
+    if (!serverId) {
+        return res.status(400).send({ error: 'Server ID is required.' });
+    }
+
+    try {
+        const { data: messages, error } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('guild_id', serverId);
+
+        if (error) {
+            console.error('Error fetching messages:', error);
+            return res.status(500).send({ error: 'Failed to fetch messages.' });
+        }
+
+        res.json(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).send({ error: 'Failed to fetch messages.' });
     }
 });
 
