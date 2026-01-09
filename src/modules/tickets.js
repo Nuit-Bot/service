@@ -93,13 +93,25 @@ async function create(interaction, serverId, channelId, ticketSetupId) {
         return;
     }
 
+    const openMessageContent = ticketOpenMessage.content
+        .replace('{{user.mention}}', `<@${interaction.user.id}>`)
+        .replace('{{user.id}}', interaction.user.id)
+        .replace('{{user.name}}', interaction.user.username)
+        .replace('{{user.display}}', interaction.user.displayName);
+
+    const openEmbedsContent = JSON.parse(ticketOpenMessage.embeds
+        .replace('{{user.mention}}', `<@${interaction.user.id}>`)
+        .replace('{{user.id}}', interaction.user.id)
+        .replace('{{user.name}}', interaction.user.username)
+        .replace('{{user.display}}', interaction.user.displayName));
+
     const thread = await channel.threads.create({
         name: `ticket-${interaction.user.username}`,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
         reason: `Ticket ouvert par ${interaction.user.username}`,
         message: {
-            content: ticketOpenMessage.content,
-            embeds: JSON.parse(ticketOpenMessage.embeds)
+            content: openMessageContent,
+            embeds: openEmbedsContent
         },
         type: ChannelType.PrivateThread
     });
