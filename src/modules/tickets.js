@@ -69,7 +69,7 @@ async function send(interaction, serverId, channelId, ticketSetupId) {
 }
 
 async function create(interaction, serverId, channelId, ticketSetupId) {
-    const channel = interaction.guild.channels.fetch(channelId);
+    const channel = await interaction.guild.channels.fetch(channelId);
 
     if (!channel) {
         console.error('Channel not found');
