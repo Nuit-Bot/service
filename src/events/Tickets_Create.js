@@ -7,6 +7,8 @@ export default {
         if (!interaction.isButton()) return;
         if (!interaction.customId.startsWith('ticket_create_')) return;
 
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
         const customId = interaction.customId;
 
         const splitCustomId = customId.split('_');
