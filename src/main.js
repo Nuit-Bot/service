@@ -31,6 +31,10 @@ const client = new Client({
 
 client.commands = new Map();
 
+client.rest.on('rateLimited', (rateLimitedData) => {
+    console.warn("Ratelimited ! : ", rateLimitedData);
+});
+
 deployCommands(client);
 deployEvents(client);
 
@@ -115,7 +119,7 @@ async function checkServerAccess(req, res, next) {
         const botInGuild = client.guilds.cache.has(serverId);
         if (!botInGuild) {
             // The bot is not in this guild. Let's send the user to invite it.
-            const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${serverId}&disable_guild_select=true&redirect_uri=${process.env.DISCORD_CALLBACK_URI}/panel`;
+            const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=8&scope=bot%20applications.commands&guild_id=${serverId}&disable_guild_select=true&redirect_uri=${process.env.DISCORD_CALLBACK_URI}`;
             return res.redirect(inviteUrl);
         }
 
